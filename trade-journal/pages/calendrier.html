@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Calendrier</div>
+        <div class="topbar-sub" id="topbar-sub"></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="menu-toggle">&#9776;</button>
+      </div>
+    </header>
+    <main class="content">
+      <div class="card" style="margin-bottom:16px">
+        <div class="row">
+          <button class="btn" id="btn-prec">&larr;</button>
+          <div style="font-size:16px;font-weight:600" id="titre-mois"></div>
+          <button class="btn" id="btn-suiv">&rarr;</button>
+          <div class="spacer"></div>
+          <button class="btn btn-sm" id="btn-aujourdhui">Aujourd'hui</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="cal-grid" id="cal-head"></div>
+      </div>
+
+      <div class="card">
+        <div class="cal-grid" id="cal-body"></div>
+      </div>
+
+      <div id="detail-jour"></div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/calculs.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/pages/calendrier.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+</body>
+</html>

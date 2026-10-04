@@ -1,0 +1,88 @@
+# ============================================================
+# ROBOTS.TXT - Trade Journal
+# ------------------------------------------------------------
+# Autorise tous les moteurs de recherche et les IA à indexer
+# les pages publiques. Bloque les pages d'application privees.
+# ============================================================
+
+# --- Moteurs de recherche classiques ---
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# --- Crawlers IA (ChatGPT, Claude, Perplexity, etc.) ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# --- Regle generale ---
+User-agent: *
+Allow: /
+Disallow: /pages/parametres.html
+Disallow: /pages/nouveau-trade.html
+Disallow: /pages/trade.html
+Disallow: /pages/journal.html
+Disallow: /pages/calendrier.html
+Disallow: /pages/statistiques.html
+Disallow: /pages/actifs.html
+Disallow: /pages/setups.html
+Disallow: /pages/risque.html
+Disallow: /pages/discipline.html
+Disallow: /pages/psychologie.html
+Disallow: /pages/objectifs.html
+Disallow: /pages/challenges.html
+Disallow: /pages/evolution.html
+Disallow: /pages/notes.html
+Disallow: /pages/lecons.html
+Disallow: /pages/rapports.html
+Disallow: /pages/graphiques.html
+Disallow: /pages/calendrier-economique.html
+
+# --- Sitemap ---
+Sitemap: https://trade-journal-app.com/sitemap.xml
+
+# --- LLMs.txt (pour les IA) ---
+# Fichier disponible a : https://trade-journal-app.com/llms.txt

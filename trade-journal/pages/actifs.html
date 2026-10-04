@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analyse des actifs - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Analyse des actifs</div>
+        <div class="topbar-sub">Comparaison de ton univers</div>
+      </div>
+      <div class="topbar-actions"><button class="menu-toggle">&#9776;</button></div>
+    </header>
+    <main class="content">
+      <div class="grid-4" id="cartes" style="margin-bottom:20px"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><div class="card-title">P&L par actif</div></div>
+        <div class="chart-box"><canvas id="c-pnl"></canvas></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><div class="card-title">Winrate par actif</div></div>
+        <div class="chart-box"><canvas id="c-wr"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Tableau comparatif</div></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Actif</th><th class="num">Trades</th><th class="num">Gagn.</th><th class="num">Perd.</th>
+                <th class="num">Winrate</th><th class="num">P&L</th><th class="num">P&L %</th>
+                <th class="num">R total</th><th class="num">R moyen</th>
+                <th class="num">Expectancy</th><th class="num">PF</th>
+                <th class="num">DD max</th><th class="num">Gain moy.</th><th class="num">Perte moy.</th>
+                <th>Meilleur jour</th><th>Pire jour</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/vendor/chart.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/calculs.js"></script>
+<script src="../js/graphiques.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/pages/actifs.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+</body>
+</html>

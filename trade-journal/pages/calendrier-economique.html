@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier Economique - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Calendrier Economique</div>
+        <div class="topbar-sub" id="topbar-sub">Evenements macro en temps reel</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="menu-toggle" aria-label="Menu">&#9776;</button>
+      </div>
+    </header>
+    <main class="content">
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Filtres</div>
+            <div class="card-sub">Choisis un actif pour voir les evenements qui le concernent, ainsi que les evenements majeurs mondiaux.</div>
+          </div>
+        </div>
+        <div class="tv-barre-recherche">
+          <input type="text" class="input" id="eco-recherche" placeholder="Rechercher un actif (XAUUSD, BTCUSD, EURUSD...)" autocomplete="off">
+          <button class="btn btn-primary" id="eco-btn-charger">Filtrer</button>
+          <div class="tv-suggestions" id="eco-suggestions"></div>
+        </div>
+        <div class="tv-pills" id="eco-pills"></div>
+      </div>
+
+      <div class="info-banner" style="margin-bottom:16px">
+        <span>Ce calendrier affiche <strong>toujours</strong> les evenements a fort impact (NFP, FOMC, CPI...) et y ajoute les evenements specifiques a l'actif que tu as selectionne.</span>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden">
+        <div id="eco-container" style="height:700px; width:100%"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const input     = document.getElementById('eco-recherche');
+  const btnLoad   = document.getElementById('eco-btn-charger');
+  const boxSugg   = document.getElementById('eco-suggestions');
+  const container = document.getElementById('eco-container');
+  const pillsZone = document.getElementById('eco-pills');
+
+  let actifCourant = 'XAUUSD';
+  let debounceTimer = null;
+
+  const MAPPING_DEVISES = {
+    XAUUSD: ['US', 'EU', 'GB', 'JP', 'CN'],
+    XAGUSD: ['US', 'EU', 'CN'],
+    XRPUSD: ['US', 'JP', 'GB'],
+    BNBUSD: ['US', 'CN', 'JP'],
+    BTCUSD: ['US', 'EU', 'JP'],
+    ETHUSD: ['US', 'EU'],
+    SOLUSD: ['US'],
+    ADAUSD: ['US'],
+    DOGEUSD: ['US'],
+    EURUSD: ['US', 'EU'],
+    GBPUSD: ['US', 'GB'],
+    USDJPY: ['US', 'JP'],
+    USDCHF: ['US', 'CH'],
+    AUDUSD: ['US', 'AU'],
+    USDCAD: ['US', 'CA'],
+    NZDUSD: ['US', 'NZ'],
+    US30: ['US'], NAS100: ['US'], SPX500: ['US'],
+    GER40: ['EU', 'DE'], UK100: ['GB'], JP225: ['JP'], FRA40: ['EU', 'FR'],
+    USOIL: ['US'], UKOIL: ['GB'], NGAS: ['US'],
+    AAPL: ['US'], TSLA: ['US'], NVDA: ['US'],
+    MSFT: ['US'], AMZN: ['US'], META: ['US'], GOOGL: ['US']
+  };
+
+  function paysPourActif(symbole) {
+    const s = symbole.toUpperCase();
+    if (MAPPING_DEVISES[s]) return MAPPING_DEVISES[s];
+    const devises = s.match(/[A-Z]{3}/g) || [];
+    const correspondance = {
+      USD: 'US', EUR: 'EU', GBP: 'GB', JPY: 'JP', AUD: 'AU',
+      CAD: 'CA', CHF: 'CH', CNY: 'CN', NZD: 'NZ'
+    };
+    const pays = devises.map(d => correspondance[d]).filter(Boolean);
+    if (!pays.includes('US')) pays.push('US');
+    return [...new Set(pays)];
+  }
+
+  function themeActuel() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function rechargerCalendrier(symbole) {
+    actifCourant = symbole;
+    const theme = themeActuel();
+    const pays = paysPourActif(symbole);
+
+    container.innerHTML = '';
+
+    const div = document.createElement('div');
+    div.className = 'tradingview-widget-container';
+    div.style.height = '100%';
+    div.style.width = '100%';
+
+    const inner = document.createElement('div');
+    inner.className = 'tradingview-widget-container__widget';
+    inner.style.height = '100%';
+    inner.style.width = '100%';
+    div.appendChild(inner);
+    container.appendChild(div);
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js';
+    script.async = true;
+    script.innerHTML = JSON.stringify({
+      colorTheme: theme,
+      isTransparent: false,
+      width: '100%',
+      height: '100%',
+      locale: 'fr',
+      importanceFilter: '0,1',
+      countryFilter: pays.join(','),
+      utm_source: 'trade-journal',
+      utm_medium: 'widget',
+      utm_campaign: 'economic-calendar'
+    });
+    div.appendChild(script);
+
+    document.querySelectorAll('#eco-pills .tv-pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.symbol === symbole));
+
+    document.getElementById('topbar-sub').textContent =
+      'Actif : ' + symbole + ' - Devises : ' + pays.join(', ');
+  }
+
+  function genererPills() {
+    pillsZone.innerHTML = '';
+    const actifs = Utils.actifs();
+    if (!actifs.length) return;
+
+    actifs.forEach((a, idx) => {
+      const pill = document.createElement('div');
+      pill.className = 'tv-pill' + (idx === 0 ? ' active' : '');
+      pill.dataset.symbol = a.symbole;
+      pill.textContent = a.symbole + ' - ' + a.nom;
+      pill.onclick = () => {
+        input.value = a.symbole;
+        rechargerCalendrier(a.symbole);
+      };
+      pillsZone.appendChild(pill);
+    });
+    actifCourant = actifs[0].symbole;
+  }
+
+  async function rechercherActifs(query) {
+    if (!query || query.length < 2) { boxSugg.classList.remove('open'); return; }
+    const url = 'https://scanner.tradingview.com/global/scan?query=' + encodeURIComponent(query) + '&type=undefined&sort=market_cap_basic&order=desc&limit=12';
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const rows = data.data || [];
+      if (rows.length === 0) {
+        boxSugg.innerHTML = '<div class="tv-suggestion-item muted">Aucun resultat</div>';
+        boxSugg.classList.add('open');
+        return;
+      }
+      boxSugg.innerHTML = rows.map(r => {
+        const sym = r.s || '';
+        const name = (r.d && r.d[1]) ? r.d[1] : '';
+        return '<div class="tv-suggestion-item" data-symbol="' + Utils.escapeHtml(sym) + '">' +
+          '<span class="tv-symbole">' + Utils.escapeHtml(sym) + '</span>' +
+          (name ? '<span class="tv-nom">- ' + Utils.escapeHtml(name) + '</span>' : '') +
+          '</div>';
+      }).join('');
+      boxSugg.querySelectorAll('.tv-suggestion-item[data-symbol]').forEach(el => {
+        el.addEventListener('click', () => {
+          input.value = el.dataset.symbol;
+          boxSugg.classList.remove('open');
+          const symbolePur = el.dataset.symbol.includes(':')
+            ? el.dataset.symbol.split(':')[1]
+            : el.dataset.symbol;
+          rechargerCalendrier(symbolePur);
+        });
+      });
+      boxSugg.classList.add('open');
+    } catch (e) {
+      boxSugg.innerHTML = '<div class="tv-suggestion-item" data-symbol="' + Utils.escapeHtml(query) + '">' +
+        '<span class="tv-symbole">' + Utils.escapeHtml(query) + '</span>' +
+        '<span class="tv-nom">Essayer tel quel</span>' +
+        '</div>';
+      boxSugg.querySelector('.tv-suggestion-item').addEventListener('click', () => {
+        boxSugg.classList.remove('open');
+        rechargerCalendrier(query);
+      });
+      boxSugg.classList.add('open');
+    }
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => rechercherActifs(input.value.trim()), 300);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const v = input.value.trim();
+      if (v) { boxSugg.classList.remove('open'); rechargerCalendrier(v); }
+    }
+  });
+  btnLoad.addEventListener('click', () => {
+    const v = input.value.trim();
+    if (v) { boxSugg.classList.remove('open'); rechargerCalendrier(v); }
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tv-barre-recherche')) boxSugg.classList.remove('open');
+  });
+
+  genererPills();
+  rechargerCalendrier(actifCourant);
+
+  const observer = new MutationObserver(() => {
+    const t = themeActuel();
+    if (container.dataset.themeCharge !== t) {
+      container.dataset.themeCharge = t;
+      rechargerCalendrier(actifCourant);
+    }
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+});
+</script>
+</body>
+</html>

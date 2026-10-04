@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nouveau trade - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="titre">Nouveau trade</div>
+        <div class="topbar-sub">Saisie detaillee</div>
+      </div>
+      <div class="topbar-actions"><button class="menu-toggle">&#9776;</button></div>
+    </header>
+    <main class="content">
+
+      <form id="form-trade">
+
+        <fieldset>
+          <legend>Informations generales</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Date <span class="req">*</span></label>
+              <input type="date" class="input" name="date" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Actif <span class="req">*</span></label>
+              <select class="select" name="actif" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Direction</label>
+              <select class="select" name="direction">
+                <option value="">-</option>
+                <option value="BUY">BUY</option>
+                <option value="SELL">SELL</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Session</label>
+              <select class="select" name="session"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Timeframe</label>
+              <select class="select" name="timeframe"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure entree</label>
+              <input type="time" class="input" name="heureEntree">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure sortie</label>
+              <input type="time" class="input" name="heureSortie">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Setup</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Setup</label>
+              <div class="row">
+                <select class="select" id="select-setup" name="setup" style="flex:1"></select>
+                <button type="button" class="btn btn-sm" id="btn-new-setup" title="Nouveau setup">+</button>
+                <button type="button" class="btn btn-sm btn-ghost" id="btn-del-setup" title="Supprimer">x</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Etat mental</label>
+              <select class="select" id="etat-mental" name="etatMental"></select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Execution</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Prix entree</label>
+              <input type="number" step="any" class="input" name="prixEntree">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stop Loss</label>
+              <input type="number" step="any" class="input" name="stopLoss">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Take Profit</label>
+              <input type="number" step="any" class="input" name="takeProfit">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Prix sortie</label>
+              <input type="number" step="any" class="input" name="prixSortie">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lot</label>
+              <input type="number" step="any" class="input" name="lot">
+            </div>
+            <div class="form-group">
+              <label class="form-label">R:R planifie</label>
+              <input type="number" step="any" class="input" id="rr-planifie" name="rrPlanifie">
+            </div>
+            <div class="form-group">
+              <label class="form-label">R:R realise</label>
+              <input type="number" step="any" class="input" name="rrRealise">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Risque et resultat</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Capital avant</label>
+              <input type="number" step="any" class="input" id="capital-avant" name="capitalAvant">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Risque %</label>
+              <input type="number" step="any" class="input" id="risque-pct" name="risquePourcentage">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Risque $ (auto)</label>
+              <input type="number" step="any" class="input" id="risque-money" name="risqueMonetaire" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Resultat $ <span class="req">*</span></label>
+              <input type="number" step="any" class="input" id="resultat" name="resultat" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Resultat % (auto)</label>
+              <input type="number" step="any" class="input" id="resultat-pct" name="resultatPourcentage" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Resultat en R (auto)</label>
+              <input type="number" step="any" class="input" id="resultat-r" name="resultatR" readonly>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Statut</label>
+              <select class="select" name="statut">
+                <option value="">-</option>
+                <option value="WIN">WIN</option>
+                <option value="LOSS">LOSS</option>
+                <option value="BE">BE</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Respect du plan</label>
+              <select class="select" name="respectPlan">
+                <option value="false">Non</option>
+                <option value="true">Oui</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Notes</legend>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Raison de l'entree</label>
+              <textarea class="textarea" name="raisonEntree"></textarea>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Raison de la sortie</label>
+              <textarea class="textarea" name="raisonSortie"></textarea>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Commentaire</label>
+              <textarea class="textarea" name="commentaire"></textarea>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label class="form-label">Erreur / erreur a eviter</label>
+              <textarea class="textarea" name="erreur"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Captures d'ecran</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Capture avant</label>
+              <input type="file" class="input" id="capture-avant" accept="image/*">
+              <div class="screenshot-preview" id="preview-avant"><img alt="Apercu avant"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Capture apres</label>
+              <input type="file" class="input" id="capture-apres" accept="image/*">
+              <div class="screenshot-preview" id="preview-apres"><img alt="Apercu apres"></div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="row" style="justify-content:flex-end;margin-top:20px">
+          <button type="button" class="btn" id="btn-annuler">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+
+      </form>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/pages/nouveau-trade.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+
+</body>
+</html>

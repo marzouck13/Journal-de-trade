@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Objectifs - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Objectifs</div>
+        <div class="topbar-sub">Progression long terme</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="menu-toggle">&#9776;</button>
+        <button class="btn btn-primary btn-action-topbar" id="btn-new">+ Nouvel objectif</button>
+      </div>
+    </header>
+    <main class="content">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Objectif financier principal</div>
+            <div class="card-sub">Objectif personnel - aucune garantie de resultat</div>
+          </div>
+          <button class="btn btn-sm" id="btn-edit-principal">Modifier</button>
+        </div>
+        <div id="objectif-principal"></div>
+      </div>
+
+      <div class="grid-2" id="liste"></div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/calculs.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/pages/objectifs.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statistiques - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Statistiques</div>
+        <div class="topbar-sub" id="topbar-sub">Analyse globale</div>
+      </div>
+      <div class="topbar-actions"><button class="menu-toggle">&#9776;</button></div>
+    </header>
+    <main class="content">
+      <div class="card" style="margin-bottom:16px">
+        <div class="row">
+          <div class="pill active" data-periode="tout">Tout</div>
+          <div class="pill" data-periode="mois">Mois en cours</div>
+          <div class="pill" data-periode="semaine">Semaine</div>
+          <div class="pill" data-periode="jour">Aujourd'hui</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid" id="kpis"></div>
+
+      <div class="grid-2" style="margin-top:16px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Resultats mensuels (P&L)</div></div>
+          <div class="chart-box"><canvas id="c-mois"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Distribution en R</div></div>
+          <div class="chart-box"><canvas id="c-distr"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:16px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Performance par actif</div></div>
+          <div class="chart-box"><canvas id="c-actifs"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">R moyen par setup</div></div>
+          <div class="chart-box"><canvas id="c-setups"></canvas></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/vendor/chart.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/calculs.js"></script>
+<script src="../js/graphiques.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/pages/statistiques.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+</body>
+</html>

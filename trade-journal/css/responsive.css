@@ -1,0 +1,352 @@
+/* ============================================================
+   RESPONSIVE - Version 2.6
+   ------------------------------------------------------------
+   Fix : boutons d'action topbar robustes (plus de :has()),
+   empeche tout debordement horizontal.
+   ============================================================ */
+
+/* ---------- Global : empeche le scroll horizontal ---------- */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+img, iframe, video, svg {
+  max-width: 100%;
+}
+
+.topbar > div:first-child,
+.topbar-actions,
+.grid-2 > *,
+.grid-3 > *,
+.grid-4 > *,
+.kpi-grid > * {
+  min-width: 0;
+}
+
+/* ============================================================
+   TABLETTE (<= 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .tv-chart-container { height: 540px; }
+  .tv-tech-container { min-height: 400px; }
+}
+
+/* ============================================================
+   MOBILE (<= 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 260px;
+    max-width: 85vw;
+    z-index: 60;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow);
+  }
+
+  .sidebar.open + .main::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 45;
+    animation: fadeIn 0.25s ease;
+  }
+
+  .main { margin-left: 0; }
+  .menu-toggle { display: inline-flex; }
+
+  /* ---------- Topbar : empeche le debordement ---------- */
+  .topbar {
+    padding: 0 12px;
+    height: 56px;
+    gap: 6px;
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
+  .topbar > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .topbar-title {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topbar-sub { display: none; }
+
+  .topbar-actions {
+    gap: 4px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* ---------- Bouton d'action topbar ----------
+     La classe .btn-action-topbar remplace :has(svg).
+     Doit contenir un SVG. Devient une icone carree. */
+  .topbar-actions .btn-action-topbar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+  }
+  .topbar-actions .btn-action-topbar svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ---------- Badges compacts ---------- */
+  .session-badge {
+    padding: 0 6px;
+    height: 30px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .session-badge .session-label { display: none; }
+
+  .btn.theme-toggle {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .btn.theme-toggle svg { width: 14px; height: 14px; }
+
+  .menu-toggle {
+    padding: 5px 8px;
+    min-width: 30px;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ---------- Content ---------- */
+  .content {
+    padding: 16px 12px 80px;
+    max-width: 100%;
+  }
+
+  /* ---------- Grilles ---------- */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .kpi {
+    padding: 12px;
+    gap: 2px;
+  }
+  .kpi-value { font-size: 17px; }
+  .kpi-label { font-size: 10px; }
+
+  /* ---------- Cards ---------- */
+  .card { padding: 16px 14px; }
+  .card-header { flex-wrap: wrap; gap: 8px; }
+  .card-title { font-size: 13px; }
+
+  /* ---------- Modales ---------- */
+  .modal-overlay { padding: 12px; }
+  .modal {
+    max-width: 100%;
+    max-height: calc(100vh - 24px);
+    border-radius: var(--radius-sm);
+  }
+  .modal-header { padding: 14px 16px; }
+  .modal-body { padding: 16px; }
+  .modal-footer {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- Notifs ---------- */
+  .notifs {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+  .notif {
+    min-width: auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* ---------- Calendrier ---------- */
+  .cal-grid { gap: 2px; }
+  .cal-head {
+    font-size: 9px;
+    padding: 4px 0;
+    letter-spacing: 0.04em;
+  }
+  .cal-day {
+    min-height: 58px;
+    padding: 4px;
+    gap: 1px;
+  }
+  .cal-day-num { font-size: 10px; }
+  .cal-day-pnl { font-size: 10px; }
+  .cal-day-meta { display: none; }
+  .cal-day-r { font-size: 9px; }
+
+  /* ---------- Tableaux -> cartes ---------- */
+  .table-wrap {
+    overflow: visible;
+    border: none;
+    background: transparent;
+    border-radius: 0;
+  }
+  .table-wrap table,
+  .table-wrap tbody,
+  .table-wrap tr,
+  .table-wrap td {
+    display: block;
+    width: 100%;
+  }
+  .table-wrap thead { display: none; }
+  .table-wrap tr {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: var(--bg-2);
+    white-space: normal;
+  }
+  .table-wrap td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+    border: none;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+  .table-wrap td::before {
+    content: attr(data-label);
+    color: var(--text-3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    flex-shrink: 0;
+    text-align: left;
+  }
+  .table-wrap td:not([data-label])::before { display: none; }
+  .table-wrap td[colspan] {
+    justify-content: center;
+    text-align: center;
+  }
+
+  table:not(.table-wrap table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ---------- Formulaires ---------- */
+  .form-grid { grid-template-columns: 1fr; }
+  fieldset { padding: 12px; }
+  legend { font-size: 10px; }
+
+  /* ---------- TradingView ---------- */
+  .tv-chart-container {
+    height: 68vh;
+    height: 68dvh;
+    min-height: 480px;
+  }
+  .tv-tech-container { min-height: 360px; }
+
+  .tv-barre-recherche {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tv-barre-recherche .input { min-width: 100%; }
+  .tv-barre-recherche .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .tv-suggestions {
+    position: static;
+    margin-top: 8px;
+    max-height: 200px;
+  }
+  .tv-pills {
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .tv-pill {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  /* ---------- Chart.js ---------- */
+  .chart-box { height: 220px; }
+  .chart-box.tall { height: 280px; }
+
+  /* ---------- Asset cards ---------- */
+  .asset-card { padding: 14px; }
+  .asset-card-value { font-size: 18px; }
+  .asset-card-meta { font-size: 10px; gap: 8px; }
+
+  /* ---------- Divers ---------- */
+  .section-title { font-size: 11px; }
+  .empty { padding: 32px 16px; font-size: 12px; }
+}
+
+/* ============================================================
+   PETIT MOBILE (<= 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+
+  .content { padding: 12px 10px 80px; }
+  .card { padding: 14px 12px; }
+
+  .topbar { padding: 0 10px; gap: 4px; }
+  .topbar-actions { gap: 4px; }
+
+  .session-badge { padding: 0 5px; font-size: 10px; }
+
+  .chart-box { height: 200px; }
+  .chart-box.tall { height: 240px; }
+
+  .topbar-actions .btn-action-topbar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+
+  .tv-chart-container {
+    height: 75vh;
+    height: 75dvh;
+    min-height: 520px;
+  }
+  .tv-tech-container { min-height: 340px; }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

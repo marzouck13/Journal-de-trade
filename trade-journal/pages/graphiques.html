@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphiques - Trade Journal</title>
+<script src="../js/anti-flash.js"></script>
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Graphiques</div>
+        <div class="topbar-sub" id="topbar-sub">Analyses techniques TradingView</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="menu-toggle" aria-label="Menu">&#9776;</button>
+      </div>
+    </header>
+    <main class="content">
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Rechercher un actif</div>
+            <div class="card-sub">Tape un symbole (XAUUSD, BTCUSD, EURUSD, AAPL...) puis selectionne une suggestion.</div>
+          </div>
+          <button class="btn btn-sm btn-ghost" id="btn-reset-config" type="button" title="Reinitialiser la configuration graphique">Reinitialiser</button>
+        </div>
+        <div class="tv-barre-recherche">
+          <input type="text" class="input" id="tv-recherche" placeholder="Ex : XAUUSD, BTCUSD, EURUSD, AAPL, TSLA..." autocomplete="off">
+          <button class="btn btn-primary" id="tv-btn-charger">Charger le graphique</button>
+          <div class="tv-suggestions" id="tv-suggestions"></div>
+        </div>
+        <div class="tv-pills" id="tv-pills"></div>
+
+        <div class="tv-intervals" id="tv-intervals" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="pill" data-interval="1">M1</button>
+          <button class="pill" data-interval="5">M5</button>
+          <button class="pill" data-interval="15">M15</button>
+          <button class="pill" data-interval="30">M30</button>
+          <button class="pill active" data-interval="60">H1</button>
+          <button class="pill" data-interval="240">H4</button>
+          <button class="pill" data-interval="D">D1</button>
+          <button class="pill" data-interval="W">W1</button>
+        </div>
+      </div>
+
+      <div class="info-banner" style="margin-bottom:16px">
+        <span>Le graphique demarre <strong>sans indicateur</strong>. Pour en ajouter un, clique sur l'icone <strong>fx</strong> dans la barre laterale gauche du graphique. Ton symbole, ton interval et ta liste d'indicateurs personnels sont <strong>sauvegardes automatiquement</strong>.</span>
+      </div>
+
+      <div class="card" style="margin-bottom:16px; padding:0; overflow:hidden">
+        <div class="tv-chart-container" id="tv-chart"></div>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden">
+        <div class="card-header" style="padding:16px 20px; margin:0; border-bottom:1px solid var(--border)">
+          <div>
+            <div class="card-title">Analyse technique</div>
+            <div class="card-sub">Signaux synthetiques - oscillateurs et moyennes mobiles</div>
+          </div>
+        </div>
+        <div class="tv-tech-container" id="tv-tech"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/graphiques-config.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+<script src="../js/pwa-install.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const input       = document.getElementById('tv-recherche');
+  const btnLoad     = document.getElementById('tv-btn-charger');
+  const btnReset    = document.getElementById('btn-reset-config');
+  const boxSugg     = document.getElementById('tv-suggestions');
+  const zoneChart   = document.getElementById('tv-chart');
+  const zoneTech    = document.getElementById('tv-tech');
+  const pillsZone   = document.getElementById('tv-pills');
+  const intervalles = document.getElementById('tv-intervals');
+
+  let symboleCourant = GraphiquesConfig.symbole();
+  let intervalCourant = GraphiquesConfig.interval();
+  let debounceTimer  = null;
+
+  const MAPPINGS = {
+    XAUUSD: 'OANDA:XAUUSD', XAGUSD: 'OANDA:XAGUSD',
+    XRPUSD: 'COINBASE:XRPUSD', BNBUSD: 'BINANCE:BNBUSDT',
+    BTCUSD: 'COINBASE:BTCUSD', ETHUSD: 'COINBASE:ETHUSD',
+    SOLUSD: 'COINBASE:SOLUSD', ADAUSD: 'COINBASE:ADAUSD',
+    DOGEUSD: 'COINBASE:DOGEUSD',
+    EURUSD: 'FX:EURUSD', GBPUSD: 'FX:GBPUSD', USDJPY: 'FX:USDJPY',
+    USDCHF: 'FX:USDCHF', AUDUSD: 'FX:AUDUSD', USDCAD: 'FX:USDCAD',
+    NZDUSD: 'FX:NZDUSD',
+    US30: 'CAPITALCOM:DJI', NAS100: 'CAPITALCOM:US100',
+    SPX500: 'SP:SPX', GER40: 'XETR:DAX', UK100: 'TVC:UKX',
+    JP225: 'TVC:NI225', FRA40: 'TVC:CAC',
+    USOIL: 'TVC:USOIL', UKOIL: 'TVC:UKOIL', NGAS: 'NYMEX:NG1!',
+    AAPL: 'NASDAQ:AAPL', TSLA: 'NASDAQ:TSLA', NVDA: 'NASDAQ:NVDA',
+    MSFT: 'NASDAQ:MSFT', AMZN: 'NASDAQ:AMZN', META: 'NASDAQ:META',
+    GOOGL: 'NASDAQ:GOOGL'
+  };
+
+  function genererPills() {
+    pillsZone.innerHTML = '';
+    const actifs = Utils.actifs();
+    actifs.forEach((a) => {
+      const tvSym = MAPPINGS[a.symbole] || a.symbole;
+      const pill = document.createElement('div');
+      pill.className = 'tv-pill' + (tvSym === symboleCourant ? ' active' : '');
+      pill.dataset.symbol = tvSym;
+      pill.textContent = a.symbole + ' - ' + a.nom;
+      pill.onclick = () => {
+        input.value = tvSym;
+        rechargerWidgets(tvSym, intervalCourant);
+      };
+      pillsZone.appendChild(pill);
+    });
+  }
+
+  function majIntervalActif() {
+    intervalles.querySelectorAll('.pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.interval === intervalCourant);
+    });
+  }
+
+  function themeActuel() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function rechargerWidgets(symbol, interval) {
+    if (!interval) interval = intervalCourant;
+    const theme = themeActuel();
+    symboleCourant = symbol;
+    intervalCourant = interval;
+
+    GraphiquesConfig.setSymbole(symbol);
+    GraphiquesConfig.setInterval(interval);
+
+    zoneChart.innerHTML = '';
+    zoneTech.innerHTML  = '';
+
+    const divChart = document.createElement('div');
+    divChart.className = 'tradingview-widget-container';
+    divChart.style.height = '100%';
+    divChart.style.width  = '100%';
+    const innerChart = document.createElement('div');
+    innerChart.className = 'tradingview-widget-container__widget';
+    innerChart.style.height = '100%';
+    innerChart.style.width  = '100%';
+    divChart.appendChild(innerChart);
+    zoneChart.appendChild(divChart);
+
+    const scriptChart = document.createElement('script');
+    scriptChart.type  = 'text/javascript';
+    scriptChart.src   = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    scriptChart.async = true;
+    scriptChart.innerHTML = JSON.stringify({
+      autosize: true,
+      symbol: symbol,
+      interval: interval,
+      timezone: 'Europe/Paris',
+      theme: theme,
+      style: '1',
+      locale: 'fr',
+      enable_publishing: false,
+      allow_symbol_change: true,
+      calendar: false,
+      support_host: 'https://www.tradingview.com',
+      hide_side_toolbar: false,
+      withdateranges: true,
+      save_image: true,
+      details: false,
+      disabled_features: [
+        'volume_force_overlay',
+        'create_volume_indicator_by_default'
+      ]
+    });
+    divChart.appendChild(scriptChart);
+
+    const divTech = document.createElement('div');
+    divTech.className = 'tradingview-widget-container';
+    const innerTech = document.createElement('div');
+    innerTech.className = 'tradingview-widget-container__widget';
+    divTech.appendChild(innerTech);
+    zoneTech.appendChild(divTech);
+
+    const scriptTech = document.createElement('script');
+    scriptTech.type  = 'text/javascript';
+    scriptTech.src   = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+    scriptTech.async = true;
+    scriptTech.innerHTML = JSON.stringify({
+      interval: '1h',
+      width: '100%',
+      isTransparent: false,
+      height: '400',
+      symbol: symbol,
+      showIntervalTabs: true,
+      displayMode: 'single',
+      locale: 'fr',
+      colorTheme: theme
+    });
+    divTech.appendChild(scriptTech);
+
+    document.querySelectorAll('#tv-pills .tv-pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.symbol === symbol));
+
+    majIntervalActif();
+
+    document.getElementById('topbar-sub').textContent =
+      'Graphique : ' + symbol + ' - ' + libelleInterval(interval);
+    window.__actifCourant = symbol;
+    window.__intervalCourant = interval;
+  }
+
+  function libelleInterval(iv) {
+    const map = { '1': 'M1', '5': 'M5', '15': 'M15', '30': 'M30',
+                  '60': 'H1', '240': 'H4', 'D': 'D1', 'W': 'W1' };
+    return map[iv] || iv;
+  }
+
+  async function rechercherActifs(query) {
+    if (!query || query.length < 2) { boxSugg.classList.remove('open'); return; }
+    const url = 'https://scanner.tradingview.com/global/scan?query=' + encodeURIComponent(query) + '&type=undefined&sort=market_cap_basic&order=desc&limit=12';
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      const rows = data.data || [];
+      if (rows.length === 0) {
+        boxSugg.innerHTML = '<div class="tv-suggestion-item muted">Aucun resultat</div>';
+        boxSugg.classList.add('open');
+        return;
+      }
+      boxSugg.innerHTML = rows.map(r => {
+        const sym  = r.s || '';
+        const name = (r.d && r.d[1]) ? r.d[1] : '';
+        return '<div class="tv-suggestion-item" data-symbol="' + Utils.escapeHtml(sym) + '">' +
+          '<span class="tv-symbole">' + Utils.escapeHtml(sym) + '</span>' +
+          (name ? '<span class="tv-nom">- ' + Utils.escapeHtml(name) + '</span>' : '') +
+          '</div>';
+      }).join('');
+      boxSugg.querySelectorAll('.tv-suggestion-item[data-symbol]').forEach(el => {
+        el.addEventListener('click', () => {
+          input.value = el.dataset.symbol;
+          boxSugg.classList.remove('open');
+          rechargerWidgets(el.dataset.symbol, intervalCourant);
+        });
+      });
+      boxSugg.classList.add('open');
+    } catch (e) {
+      boxSugg.innerHTML = '<div class="tv-suggestion-item" data-symbol="' + Utils.escapeHtml(query) + '">' +
+        '<span class="tv-symbole">' + Utils.escapeHtml(query) + '</span>' +
+        '<span class="tv-nom">Essayer tel quel</span>' +
+        '</div>';
+      boxSugg.querySelector('.tv-suggestion-item').addEventListener('click', () => {
+        boxSugg.classList.remove('open');
+        rechargerWidgets(query, intervalCourant);
+      });
+      boxSugg.classList.add('open');
+    }
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => rechercherActifs(input.value.trim()), 300);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const v = input.value.trim();
+      if (v) { boxSugg.classList.remove('open'); rechargerWidgets(v, intervalCourant); }
+    }
+  });
+  btnLoad.addEventListener('click', () => {
+    const v = input.value.trim();
+    if (v) { boxSugg.classList.remove('open'); rechargerWidgets(v, intervalCourant); }
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.tv-barre-recherche')) boxSugg.classList.remove('open');
+  });
+
+  intervalles.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pill[data-interval]');
+    if (!btn) return;
+    const iv = btn.dataset.interval;
+    if (iv === intervalCourant) return;
+    rechargerWidgets(symboleCourant, iv);
+  });
+
+  btnReset.addEventListener('click', async () => {
+    if (!await Notif.confirmer('Reinitialiser la configuration graphique ?\n\nSymbole, interval et indicateurs personnels sauvegardes seront perdus.')) return;
+    GraphiquesConfig.reinitialiser();
+    symboleCourant = GraphiquesConfig.DEFAUT.symbole;
+    intervalCourant = GraphiquesConfig.DEFAUT.interval;
+    input.value = '';
+    genererPills();
+    rechargerWidgets(symboleCourant, intervalCourant);
+    Notif.succes('Configuration reinitialisee.');
+  });
+
+  window.addEventListener('theme-changed', () => {
+    if (zoneChart.dataset.themeCharge !== themeActuel()) {
+      zoneChart.dataset.themeCharge = themeActuel();
+      rechargerWidgets(symboleCourant, intervalCourant);
+    }
+  });
+
+  try {
+    await GraphiquesConfig.initialiser();
+  } catch (e) {}
+  symboleCourant  = GraphiquesConfig.symbole();
+  intervalCourant = GraphiquesConfig.interval();
+
+  genererPills();
+  rechargerWidgets(symboleCourant, intervalCourant);
+});
+</script>
+</body>
+</html>

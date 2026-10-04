@@ -1,0 +1,75 @@
+# Trade Journal
+
+> Journal de trading personnel, libre, gratuit et open source. Un outil sobre et analytique pour journaliser ses trades, mesurer ses statistiques et progresser sans aucune promesse de performance.
+
+## A propos du projet
+
+Trade Journal est une application web de journalisation de trading personnel. Elle permet a tout trader d'enregistrer ses trades, d'analyser ses statistiques (winrate, R-multiple, drawdown, profit factor) et de suivre sa progression dans le temps.
+
+Le projet a ete cree par Marzouck AFFO, etudiant beninois en 2e annee de genie logiciel (developpement logiciel et intelligence artificielle), passionne par le trading et par les outils numeriques sobres et respectueux de la vie privee.
+
+Trade Journal n'est PAS un broker, ne passe AUCUN ordre, ne se connecte a AUCUN compte de trading et ne fournit AUCUN conseil financier. C'est un outil de suivi et d'analyse personnelle. Le trader reste seul decisionnaire de ses positions.
+
+## Fonctionnalites principales
+
+- Journalisation complete des trades (date, actif, direction, prix, stop loss, take profit, lot, resultat, R-multiple)
+- Capture d'ecran avant/apres chaque trade, compressees automatiquement
+- Statistiques avancees : winrate, profit factor, expectancy, drawdown maximal, serie de gains/pertes
+- Analyses par actif, par setup, par jour, par mois, par session de trading
+- Suivi de la discipline et de la psychologie (respect du plan, erreurs, etat mental)
+- Objectifs et challenges personnels avec suivi automatique
+- Notes et lecons pour capitaliser sur chaque experience
+- Calendrier mensuel de performance
+- Graphiques TradingView integres (necessitent Internet)
+- Fonctionne 100 % hors ligne, sans aucun compte
+- Aucune donnee ne quitte l'appareil de l'utilisateur
+- Application PWA installable sur mobile et ordinateur
+
+## Fonctionnement technique
+
+Trade Journal est une application entierement locale. Elle n'utilise aucun serveur, aucune base de donnees distante, aucun service d'authentification.
+
+Toutes les donnees (trades, notes, objectifs, captures d'ecran) sont stockees directement sur l'appareil de l'utilisateur via :
+- IndexedDB (donnees structurees)
+- OPFS - Origin Private File System (captures d'ecran)
+- LocalStorage (preferences)
+
+L'utilisateur peut exporter l'integralite de ses donnees a tout moment dans un dossier de son appareil (fonction File System Access, Chrome/Edge/Opera) ou en fichiers JSON/CSV.
+
+## Pages publiques
+
+- [Accueil](https://trade-journal-app.com/index.html) : application et presentation de la plateforme
+- [A propos](https://trade-journal-app.com/pages/a-propos.html) : le projet, l'auteur, comment aider, licence MIT
+- [Support](https://trade-journal-app.com/pages/support.html) : FAQ et contact
+- [Conditions d'utilisation](https://trade-journal-app.com/pages/cgu.html)
+- [Politique de confidentialite](https://trade-journal-app.com/pages/confidentialite.html)
+
+## A propos de l'auteur
+
+- Nom : Marzouck AFFO
+- Statut : Etudiant en 2e annee de genie logiciel (developpement logiciel et intelligence artificielle)
+- Contact : contact@trade-journal-app.com
+- Le projet est publie sous licence MIT
+
+## Comment aider le projet
+
+- Partager Trade Journal autour de toi
+- Signaler un bug ou proposer une amelioration
+- Contribuer au code (open source)
+- Soutenir financierement (optionnel, jamais obligatoire)
+
+## Principes
+
+- Aucun conseil financier
+- Aucune promesse de performance
+- Respect de la vie privee : les donnees restent sur l'appareil de l'utilisateur
+- Sobriete : pas de gamification agressive, pas d'incitation a trader plus
+- Open source et gratuit
+
+## Informations techniques
+
+- Frontend : HTML5, CSS3, JavaScript vanilla (aucun framework)
+- Stockage : IndexedDB + OPFS (local navigateur)
+- Hebergement : Netlify / GitHub Pages
+- PWA installable, fonctionne hors ligne
+- Licence MIT
