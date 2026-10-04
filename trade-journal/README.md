@@ -112,7 +112,7 @@ Les contributions sont les bienvenues. Pour proposer une amelioration :
 
 ## Signaler un bug
 
-Utilise la page Support (https://trade-journal-app.com/pages/support.html) ou ecris a contact@trade-journal-app.com.
+Utilise la page Support (https://trade-journal-app.com/pages/support.html) ou ecris a marzouckaffo7@gmail.com.
 
 ## Principes
 

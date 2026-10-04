@@ -48,7 +48,7 @@ L'utilisateur peut exporter l'integralite de ses donnees a tout moment dans un d
 
 - Nom : Marzouck AFFO
 - Statut : Etudiant en 2e annee de genie logiciel (developpement logiciel et intelligence artificielle)
-- Contact : contact@trade-journal-app.com
+- Contact : marzouckaffo7@gmail.com
 - Le projet est publie sous licence MIT
 
 ## Comment aider le projet
