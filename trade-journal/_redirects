@@ -1,0 +1,12 @@
+# Toutes les routes inconnues -> index.html
+/*    /index.html   200
+
+# Redirections explicites
+/journal          /pages/journal.html        200
+/parametres       /pages/parametres.html     200
+/graphiques       /pages/graphiques.html     200
+/soutenir         /pages/soutenir.html       200
+/a-propos         /pages/a-propos.html       200
+/support          /pages/support.html        200
+/cgu              /pages/cgu.html            200
+/confidentialite  /pages/confidentialite.html 200

@@ -1,18 +1,20 @@
 # ============================================================
 # NETLIFY - Configuration Trade Journal
+# Le projet est dans le sous-dossier "trade-journal"
 # ============================================================
 
 [build]
-  publish = "."
+  base = "trade-journal"
+  publish = "trade-journal"
 
-# Force le bon type MIME pour le manifest
+# Headers pour le manifest PWA
 [[headers]]
   for = "/manifest.json"
   [headers.values]
     Content-Type = "application/manifest+json"
     Cache-Control = "public, max-age=3600"
 
-# Service worker : pas de cache + autorise le scope racine
+# Service worker
 [[headers]]
   for = "/service-worker.js"
   [headers.values]
@@ -20,7 +22,7 @@
     Cache-Control = "no-cache, no-store, must-revalidate"
     Service-Worker-Allowed = "/"
 
-# Assets statiques : cache long
+# Assets : cache long
 [[headers]]
   for = "/assets/*"
   [headers.values]
