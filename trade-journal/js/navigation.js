@@ -1,12 +1,13 @@
 /* ============================================================
    NAVIGATION - Sidebar et topbar partagees
    ------------------------------------------------------------
-   Version : 4.2
-   Derniere mise a jour : Ajout du lien Soutenir
+   Version : 4.3
+   Derniere mise a jour : Lien Installer auto-masquant
 
-   Ameliorations v4.2 :
-   - Ajout du lien "Soutenir" dans la section Informations
-   - Icone cadeau
+   Ameliorations v4.3 :
+   - Ajout du lien "Installer" dans Informations
+   - Le lien se masque automatiquement quand l'app est installee
+   - Ecoute de l'evenement pwa-installe pour mise a jour live
    ============================================================ */
 const Navigation = (() => {
   const base = (() => {
@@ -111,7 +112,8 @@ const Navigation = (() => {
     settings:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
     info:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>',
     heart:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
-    gift:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>'
+    gift:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>',
+    download:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
   };
 
   const SECTIONS = [
@@ -147,6 +149,7 @@ const Navigation = (() => {
     { titre: 'Informations', liens: [
       { id: 'a-propos',        label: 'A propos',         href: 'pages/a-propos.html',        icon: 'heart' },
       { id: 'soutenir',        label: 'Soutenir',         href: 'pages/soutenir.html',        icon: 'gift' },
+      { id: 'installer',       label: 'Installer',        href: 'pages/installer.html',       icon: 'download', masquable: true },
       { id: 'support',         label: 'Support',          href: 'pages/support.html',         icon: 'info' },
       { id: 'cgu',             label: 'Conditions',       href: 'pages/cgu.html',             icon: 'report' },
       { id: 'confidentialite', label: 'Confidentialite',  href: 'pages/confidentialite.html', icon: 'report' }
@@ -167,9 +170,32 @@ const Navigation = (() => {
       'parametres.html': 'parametres',
       'a-propos.html': 'a-propos',
       'soutenir.html': 'soutenir',
+      'installer.html': 'installer',
       'support.html': 'support', 'cgu.html': 'cgu', 'confidentialite.html': 'confidentialite'
     };
     return map[p] || '';
+  }
+
+  function appEstInstallee() {
+    if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
+    if (window.navigator.standalone === true) return true;
+    try {
+      if (localStorage.getItem('tj_pwa_installe') === '1') return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function masquerLiensInstaller() {
+    document.querySelectorAll('[data-masquable="true"]').forEach(el => {
+      el.style.display = 'none';
+    });
+  }
+
+  function appliquerMasquage() {
+    if (appEstInstallee()) {
+      masquerLiensInstaller();
+    }
   }
 
   function initSidebarResponsive() {
@@ -229,7 +255,9 @@ const Navigation = (() => {
       html += '<div class="nav-section-title">' + section.titre + '</div>';
       for (const l of section.liens) {
         const cls = 'nav-link' + (l.id === active ? ' active' : '');
-        html += '<a class="' + cls + '" href="' + base + l.href + '">' + (ICONS[l.icon] || '') + '<span>' + l.label + '</span></a>';
+        const masquableAttr = l.masquable ? ' data-masquable="true"' : '';
+        html += '<a class="' + cls + '" href="' + base + l.href + '"' + masquableAttr + '>' +
+                (ICONS[l.icon] || '') + '<span>' + l.label + '</span></a>';
       }
     }
     html += '</nav>' +
@@ -263,6 +291,14 @@ const Navigation = (() => {
     });
 
     initSidebarResponsive();
+    appliquerMasquage();
+
+    // Ecouter les evenements d'installation pour mettre a jour en direct
+    if (!window.__navPwaListener) {
+      window.__navPwaListener = true;
+      window.addEventListener('appinstalled', masquerLiensInstaller);
+      window.addEventListener('pwa-installe', masquerLiensInstaller);
+    }
 
     const actions = document.querySelector('.topbar-actions');
 

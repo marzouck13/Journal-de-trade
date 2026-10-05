@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Installer Trade Journal - Application mobile et ordinateur</title>
+<meta name="description" content="Installe Trade Journal sur ton telephone ou ton ordinateur. Acces direct depuis l'ecran d'accueil, fonctionnement hors ligne, experience plein ecran.">
+<meta name="author" content="Marzouck AFFO">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://trade-journal-app.com/pages/installer.html">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Trade Journal">
+<meta property="og:title" content="Installer Trade Journal">
+<meta property="og:description" content="Installe Trade Journal sur ton telephone ou ton ordinateur.">
+<meta property="og:url" content="https://trade-journal-app.com/pages/installer.html">
+<meta property="og:image" content="https://trade-journal-app.com/assets/og-image.png">
+
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade Journal">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="icon" href="../assets/favicon.png" sizes="any">
+
+<!-- universal-pwa : capture beforeinstallprompt des le chargement -->
+<script src="https://cdn.jsdelivr.net/npm/universal-pwa/dist/index.umd.js"></script>
+
+<script src="../js/anti-flash.js"></script>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar"></aside>
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Installer</div>
+        <div class="topbar-sub">Application mobile et ordinateur</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="menu-toggle" aria-label="Menu">&#9776;</button>
+      </div>
+    </header>
+    <main class="content" style="max-width:820px">
+
+      <!-- Bandeau "deja installe" -->
+      <div id="bandeau-deja-installe" class="card hidden" style="margin-bottom:16px;text-align:center;padding:32px 24px;border-color:var(--green)">
+        <div style="display:inline-flex;width:64px;height:64px;border-radius:50%;background:var(--green-soft);align-items:center;justify-content:center;color:var(--green);margin-bottom:16px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="32" height="32" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px">Trade Journal est deja installe</div>
+        <div style="font-size:14px;color:var(--text-2);max-width:480px;margin:0 auto;line-height:1.7">
+          Tu utilises actuellement la version installee de Trade Journal.
+          Pour ouvrir l'application, cherche l'icone <strong>Trade Journal</strong>
+          sur ton ecran d'accueil ou dans ton menu d'applications.
+        </div>
+      </div>
+
+      <!-- En-tete + bouton principal -->
+      <div id="bloc-principal" class="card" style="margin-bottom:16px;text-align:center;padding:40px 24px 32px">
+        <div class="sidebar-brand-logo" style="margin:0 auto 18px;width:64px;height:64px;border-radius:14px">
+          <img src="../assets/icon-192.png" alt="Trade Journal">
+        </div>
+        <div style="font-size:26px;font-weight:700;letter-spacing:-0.025em;margin-bottom:12px;line-height:1.2">Installer Trade Journal</div>
+        <div style="font-size:14px;color:var(--text-2);max-width:520px;margin:0 auto 24px;line-height:1.75">
+          Installe l'application sur ton telephone ou ton ordinateur pour un acces
+          direct depuis ton ecran d'accueil, un fonctionnement 100 % hors ligne
+          et une experience plein ecran sans barre de navigateur.
+        </div>
+
+        <div>
+          <button type="button" class="btn btn-primary" id="btn-installer" style="justify-content:center;padding:14px 32px;font-size:14px;min-width:240px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="btn-installer-texte">Installer maintenant</span>
+          </button>
+          <div id="msg-sous-bouton" style="font-size:12px;color:var(--text-3);margin-top:10px">
+            Chargement...
+          </div>
+        </div>
+      </div>
+
+      <!-- Note d'aide contextuelle -->
+      <div id="alerte-contexte" class="hidden" style="margin-bottom:16px"></div>
+
+      <!-- Pourquoi installer -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Pourquoi installer</div>
+            <div class="card-sub">Quatre avantages concrets a utiliser la version installee</div>
+          </div>
+        </div>
+        <div style="display:grid;gap:12px">
+
+          <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;color:var(--accent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Acces direct depuis l'ecran d'accueil</div>
+              <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+                Une icone Trade Journal apparait sur ton ecran d'accueil, comme une vraie application. Un tap et c'est ouvert.
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;color:var(--accent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Fonctionne 100 % hors ligne</div>
+              <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+                Une fois installee, l'application fonctionne sans connexion Internet. Journalise tes trades n'importe ou.
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;color:var(--accent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Experience plein ecran</div>
+              <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+                Pas de barre d'adresse, pas d'onglets. Trade Journal occupe tout l'ecran et te laisse te concentrer.
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;color:var(--accent)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Demarrage plus rapide</div>
+              <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+                L'application s'ouvre instantanement, sans attendre le chargement. Tes donnees sont deja sur l'appareil.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Instructions Android -->
+      <div class="card" id="section-android" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Sur Android</div>
+            <div class="card-sub">Chrome, Edge, Samsung Internet</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.75;margin-bottom:16px">
+          Si le bouton ci-dessus ne lance pas l'installation automatiquement, voici la procedure manuelle.
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">1</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Ouvre le menu du navigateur</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Appuie sur l'icone <strong>trois points verticaux</strong> en haut a droite de Chrome.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">2</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Choisis "Installer l'application" ou "Ajouter a l'ecran d'accueil"</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Selon la version de Chrome, l'option s'appelle <strong>"Installer l'application"</strong>
+              ou <strong>"Ajouter a l'ecran d'accueil"</strong>.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">3</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Confirme l'installation</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Une confirmation apparait. Appuie sur <strong>Installer</strong> ou <strong>Ajouter</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions iOS -->
+      <div class="card" id="section-ios" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Sur iPhone et iPad</div>
+            <div class="card-sub">Safari uniquement</div>
+          </div>
+        </div>
+        <div style="padding:12px 14px;background:var(--yellow-soft);border:1px solid rgba(245,158,11,0.3);border-radius:8px;font-size:12.5px;color:var(--yellow);line-height:1.65;margin-bottom:16px">
+          <strong>Important :</strong> sur iPhone et iPad, l'installation automatique
+          n'est <strong>pas possible</strong>. Apple ne l'autorise que manuellement
+          via Safari. Suis les etapes ci-dessous.
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">1</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Ouvre le site dans Safari</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Rends-toi sur <strong>mon-tradejournal.netlify.app</strong> depuis Safari.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">2</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Appuie sur le bouton Partager</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              C'est l'icone en forme de <strong>carre avec une fleche vers le haut</strong>,
+              en bas au centre de l'ecran.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">3</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Cherche "Sur l'ecran d'accueil"</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Fais defiler le menu vers le bas et appuie sur
+              <strong>"Sur l'ecran d'accueil"</strong>.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">4</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Appuie sur "Ajouter"</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              L'icone Trade Journal apparait sur ton ecran d'accueil.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions ordinateur -->
+      <div class="card" id="section-desktop" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Sur ordinateur</div>
+            <div class="card-sub">Chrome, Edge, Brave, Opera</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">1</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Regarde la barre d'adresse</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Sur la droite de la barre d'adresse, une petite icone
+              <strong>ordinateur avec une fleche</strong> ou un <strong>+</strong> dans un cercle peut apparaitre.
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;padding:16px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-4);display:grid;place-items:center;flex-shrink:0;color:var(--text-2);font-weight:700;font-size:14px">2</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text)">Clique dessus et confirme</div>
+            <div style="font-size:12.5px;color:var(--text-2);line-height:1.65">
+              Trade Journal s'installe et une icone est ajoutee a ton bureau
+              ou a ton lanceur d'applications.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note finale -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div class="card-title">Une fois installee</div>
+        </div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.75">
+          Une fois Trade Journal installee, tu n'as plus besoin d'ouvrir ton navigateur.
+          Ouvre l'application directement depuis l'icone Trade Journal sur ton ecran
+          d'accueil, ton bureau ou ton lanceur d'applications.
+        </div>
+      </div>
+
+      <!-- Remerciement final -->
+      <div style="text-align:center;padding:24px 20px;font-size:12.5px;color:var(--text-3);line-height:1.8">
+        Une question ?<br>
+        <a href="support.html" style="color:var(--accent)">Consulte la page Support</a> ou ecris-nous a
+        <a href="mailto:marzouckaffo7@gmail.com" style="color:var(--accent)">marzouckaffo7@gmail.com</a>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utilitaires.js"></script>
+<script src="../js/stockage.js"></script>
+<script src="../js/stockage-images.js"></script>
+<script src="../js/donnees.js"></script>
+<script src="../js/notifications.js"></script>
+<script src="../js/navigation.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/pwa-register.js"></script>
+
+<!-- ============================================================
+     INTEGRATION universal-pwa
+     ------------------------------------------------------------
+     On initialise la librairie en mode "headless" (sans UI auto)
+     pour garder le controle total sur nos propres boutons et
+     messages. UniversalPWA gere toute la logique delicate :
+     - interception de beforeinstallprompt
+     - detection iOS / Firefox / deja installe
+     - appel de prompt() au bon moment
+     ============================================================ -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Verifier que la librairie est bien chargee
+  if (typeof UniversalPWA === 'undefined' || !UniversalPWA.createEngine) {
+    console.warn('[Installer] universal-pwa non chargee. Fallback sur les instructions manuelles.');
+    activerFallback();
+    return;
+  }
+
+  // Creer le moteur en mode headless (on gerera l'UI nous-memes)
+  const engine = UniversalPWA.createEngine({
+    appName: 'Trade Journal',
+    iconUrl: '../assets/icon-192.png',
+    themeColor: '#4f8cff',
+    delay: 0,
+    dismissCooldownDays: 3
+  });
+
+  const btnInstaller = document.getElementById('btn-installer');
+  const btnTexte = document.getElementById('btn-installer-texte');
+  const msgEl = document.getElementById('msg-sous-bouton');
+  const bandeauDejaInstalle = document.getElementById('bandeau-deja-installe');
+  const blocPrincipal = document.getElementById('bloc-principal');
+
+  /* -------- Etat initial -------- */
+  function majUI() {
+    const status = engine.status;
+    const platform = engine.platform;
+
+    // Si deja installe -> masquer le bloc principal
+    if (engine.isInstalled) {
+      if (bandeauDejaInstalle) bandeauDejaInstalle.classList.remove('hidden');
+      if (blocPrincipal) blocPrincipal.classList.add('hidden');
+      return;
+    }
+
+    // Mettre a jour le message selon la plateforme
+    if (msgEl) {
+      if (status === 'installable') {
+        msgEl.innerHTML = 'Clique sur le bouton ci-dessus. Ton navigateur te demandera de confirmer en un clic.';
+      } else if (status === 'unsupported') {
+        if (platform === 'ios-safari' || (platform && platform.indexOf('ios') === 0)) {
+          msgEl.innerHTML = '<span style="color:var(--yellow)">Sur iPhone et iPad, l\'installation automatique n\'est pas possible. Suis les etapes ci-dessous.</span>';
+        } else if (platform === 'firefox') {
+          msgEl.innerHTML = '<span style="color:var(--yellow)">Firefox ne permet pas l\'installation. Utilise Chrome ou Edge.</span>';
+        } else {
+          msgEl.innerHTML = 'Utilise les instructions ci-dessous selon ton appareil.';
+        }
+      } else if (status === 'dismissed') {
+        msgEl.innerHTML = 'Tu as recemment refuse l\'installation. Tu peux reessayer dans quelques jours.';
+      } else {
+        msgEl.innerHTML = 'Chargement...';
+      }
+    }
+
+    // Mettre a jour le texte du bouton
+    if (btnTexte) {
+      if (status === 'installable') {
+        btnTexte.textContent = 'Installer maintenant';
+      } else if (platform === 'ios-safari' || (platform && platform.indexOf('ios') === 0)) {
+        btnTexte.textContent = 'Voir les instructions';
+      } else {
+        btnTexte.textContent = 'Voir les instructions';
+      }
+    }
+  }
+
+  /* -------- Ecoute des evenements du moteur -------- */
+  engine.on('ready', majUI);
+  engine.on('installable', majUI);
+  engine.on('installed', function () {
+    if (typeof Notif !== 'undefined') {
+      Notif.succes('Installation reussie. Cherche l\'icone Trade Journal sur ton ecran d\'accueil.');
+    }
+    majUI();
+  });
+  engine.on('dismissed', majUI);
+  engine.on('error', function (err) {
+    console.warn('[Installer] Erreur engine :', err);
+  });
+
+  // Etat initial
+  majUI();
+
+  /* -------- Clic sur le bouton principal -------- */
+  if (btnInstaller) {
+    btnInstaller.addEventListener('click', async function () {
+
+      // Si deja installe -> ne rien faire
+      if (engine.isInstalled) return;
+
+      // Si installable -> declencher le prompt natif
+      if (engine.isInstallable) {
+        try {
+          btnInstaller.disabled = true;
+          if (btnTexte) btnTexte.textContent = 'Ouverture...';
+
+          const outcome = await engine.install();
+          console.log('[Installer] Resultat :', outcome);
+
+          if (outcome === 'accepted') {
+            // Le prompt a ete accepte -> appinstalled se declenchera
+            if (btnTexte) btnTexte.textContent = 'Installation...';
+          } else if (outcome === 'dismissed') {
+            if (typeof Notif !== 'undefined') {
+              Notif.info('Installation annulee. Tu peux reessayer quand tu veux.');
+            }
+            if (btnTexte) btnTexte.textContent = 'Installer maintenant';
+            btnInstaller.disabled = false;
+          } else if (outcome === 'ios') {
+            // iOS -> pas de prompt, scroll vers instructions
+            afficherInstructions('ios');
+            btnInstaller.disabled = false;
+            if (btnTexte) btnTexte.textContent = 'Voir les instructions';
+          } else {
+            // unsupported
+            afficherInstructions('auto');
+            btnInstaller.disabled = false;
+            if (btnTexte) btnTexte.textContent = 'Voir les instructions';
+          }
+        } catch (e) {
+          console.warn('[Installer] Erreur install :', e.message);
+          btnInstaller.disabled = false;
+          if (btnTexte) btnTexte.textContent = 'Installer maintenant';
+        }
+        return;
+      }
+
+      // Non installable -> afficher les instructions appropriees
+      afficherInstructions('auto');
+    });
+  }
+
+  /* -------- Scroll vers la section d'instructions appropriees -------- */
+  function afficherInstructions(cible) {
+    const platform = engine.platform || '';
+    let section = null;
+
+    if (cible === 'ios' || platform.indexOf('ios') === 0 || platform === 'ios-safari') {
+      section = document.getElementById('section-ios');
+    } else if (platform === 'firefox') {
+      if (typeof Notif !== 'undefined') {
+        Notif.warn('Firefox ne permet pas l\'installation. Ouvre le site dans Chrome ou Edge.');
+      }
+      return;
+    } else if (platform.indexOf('android') === 0) {
+      section = document.getElementById('section-android');
+    } else {
+      section = document.getElementById('section-desktop');
+    }
+
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      section.style.transition = 'box-shadow 0.4s';
+      section.style.boxShadow = '0 0 0 2px var(--accent)';
+      setTimeout(function () { section.style.boxShadow = ''; }, 2500);
+    }
+
+    if (typeof Notif !== 'undefined') {
+      if (platform.indexOf('ios') === 0) {
+        Notif.info('Sur iPhone, utilise Safari puis Partager > Sur l\'ecran d\'accueil.');
+      } else if (platform.indexOf('android') === 0) {
+        Notif.info('Utilise le menu de Chrome (trois points) > Installer l\'application.');
+      }
+    }
+  }
+
+  /* -------- Fallback si la librairie ne charge pas -------- */
+  function activerFallback() {
+    const btn = document.getElementById('btn-installer');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      const ua = navigator.userAgent;
+      const estIOS = /iPad|iPhone|iPod/.test(ua);
+      let section = null;
+      if (estIOS) section = document.getElementById('section-ios');
+      else if (/Android/i.test(ua)) section = document.getElementById('section-android');
+      else section = document.getElementById('section-desktop');
+      if (section) section.scrollIntoView({ behavior: 'smooth' });
+      if (typeof Notif !== 'undefined') {
+        Notif.info('Suis les instructions ci-dessous pour installer l\'application.');
+      }
+    });
+  }
+
+  /* -------- Verifier l'etat d'installation a chaque retour sur l'onglet -------- */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') majUI();
+  });
+
+});
+</script>
+
+</body>
+</html>

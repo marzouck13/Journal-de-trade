@@ -1,21 +1,18 @@
 /* ============================================================
    SERVICE WORKER - Trade Journal
    ------------------------------------------------------------
-   Version : 4.3
-   Derniere mise a jour : Ajout de la page merci.html
+   Version : 4.4
+   Derniere mise a jour : Ajout de installer.html
    ============================================================ */
 
-const CACHE_VERSION = 'tj-v4.3.0';
+const CACHE_VERSION = 'tj-v4.4.0';
 const CACHE_STATIQUE = CACHE_VERSION + '-static';
 const CACHE_PAGES = CACHE_VERSION + '-pages';
 
 const RESSOURCES_STATIQUES = [
   './', './index.html', './manifest.json',
-
   './css/style.css', './css/responsive.css',
-
   './js/vendor/chart.min.js',
-
   './js/anti-flash.js',
   './js/config.js',
   './js/utilitaires.js',
@@ -32,13 +29,11 @@ const RESSOURCES_STATIQUES = [
   './js/app.js',
   './js/pwa-register.js',
   './js/pwa-install.js',
-
   './js/pages/dashboard.js',
   './js/pages/journal.js',
   './js/pages/nouveau-trade.js',
   './js/pages/trade.js',
   './js/pages/parametres.js',
-
   './pages/journal.html',
   './pages/nouveau-trade.html',
   './pages/trade.html',
@@ -60,6 +55,7 @@ const RESSOURCES_STATIQUES = [
   './pages/parametres.html',
   './pages/a-propos.html',
   './pages/soutenir.html',
+  './pages/installer.html',
   './pages/merci.html',
   './pages/cgu.html',
   './pages/confidentialite.html',

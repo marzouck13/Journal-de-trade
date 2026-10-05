@@ -1,20 +1,13 @@
 /* ============================================================
-   PWA-INSTALL - Installation PWA (bannière + bouton sidebar)
+   PWA-INSTALL - Installation PWA (banniere + bouton sidebar)
    ------------------------------------------------------------
-   Version : 2.1
-   Derniere mise a jour : Masquage auto une fois installe
+   Version : 2.3
+   Derniere mise a jour : Emission evenement pwa-installe
 
-   Ameliorations v2.1 :
-   - Persistance de l'etat "installe" dans localStorage
-   - Detection via navigator.getInstalledRelatedApps()
-   - Masquage automatique du bouton apres installation
-   - Verification a chaque retour sur l'onglet
-   - Le bouton ne s'affiche que si l'installation est possible
-
-   Fonctionnalites :
-   - Detecte beforeinstallprompt (Chrome, Edge, Samsung)
-   - Banniere custom pour iOS Safari (Partager -> ecran accueil)
-   - Bouton permanent dans la sidebar
+   Ameliorations v2.3 :
+   - Emission de l'evenement "pwa-installe" quand l'app est
+     detectee comme installee (utilise par navigation.js)
+   - Fiabilisation de la capture de beforeinstallprompt
    - Diagnostic complet en console
    ============================================================ */
 (function () {
@@ -24,9 +17,21 @@
   const CLE_INSTALLE = 'tj_pwa_installe';
   const DUREE_REFUS_MS = 30 * 24 * 60 * 60 * 1000;
 
-  /* ==========================================================
-     DIAGNOSTIC
-     ========================================================== */
+  // ---- Exposer deferredPrompt globalement pour la page installer.html ----
+  window.deferredPrompt = null;
+
+  // ---- Capture immediate de l'evenement ----
+  window.addEventListener('beforeinstallprompt', (e) => {
+    console.log('[PWA] Evenement beforeinstallprompt capture.');
+    e.preventDefault();
+    window.deferredPrompt = e;
+
+    // Declencher l'UI si les fonctions sont pretes
+    if (typeof window.afficherInterfaceInstallation === 'function') {
+      window.afficherInterfaceInstallation();
+    }
+  });
+
   const DIAG = {
     protocole: location.protocol,
     host: location.hostname,
@@ -48,22 +53,22 @@
     return;
   }
 
-  /* ==========================================================
-     ETAT D'INSTALLATION
-     ==========================================================
-     Trois sources d'information, dans l'ordre de fiabilite :
-     1. Mode standalone (l'app tourne deja installee)
-     2. Flag persistant dans localStorage (appinstalled)
-     3. navigator.getInstalledRelatedApps() (Android Chrome)
-     ========================================================== */
+  // ---- Etat d'installation ----
   let etatInstalle = false;
 
   function marquerInstalle() {
+    if (etatInstalle) return;
     etatInstalle = true;
     document.body.setAttribute('data-pwa-installed', 'true');
     try { localStorage.setItem(CLE_INSTALLE, '1'); } catch (e) {}
     supprimerBoutonSidebar();
     retirerBanniere();
+
+    // Emettre un evenement pour les autres scripts
+    try {
+      window.dispatchEvent(new CustomEvent('pwa-installe'));
+    } catch (e) {}
+
     console.log('[PWA] Application marquee comme installee');
   }
 
@@ -72,7 +77,6 @@
   }
 
   async function verifierViaAPI() {
-    // navigator.getInstalledRelatedApps est disponible sur Chrome Android
     if (!navigator.getInstalledRelatedApps) return null;
     try {
       const apps = await navigator.getInstalledRelatedApps();
@@ -83,118 +87,29 @@
   }
 
   async function verifierInstallation() {
-    // Priorite 1 : mode standalone
-    if (DIAG.estStandalone) {
-      marquerInstalle();
-      return true;
-    }
-    // Priorite 2 : flag localStorage
-    if (estMarqueInstalle()) {
-      marquerInstalle();
-      return true;
-    }
-    // Priorite 3 : API navigateur
+    if (DIAG.estStandalone) { marquerInstalle(); return true; }
+    if (estMarqueInstalle()) { marquerInstalle(); return true; }
     const viaAPI = await verifierViaAPI();
-    if (viaAPI === true) {
-      marquerInstalle();
-      return true;
-    }
+    if (viaAPI === true) { marquerInstalle(); return true; }
     return false;
   }
 
-  /* ==========================================================
-     DIAGNOSTIC CONSOLE
-     ========================================================== */
   function afficherDiagnostic() {
     console.group('[PWA] Diagnostic');
     console.log('Protocole      :', DIAG.protocole);
     console.log('Host           :', DIAG.host);
-    console.log('HTTPS requis   :', DIAG.estHTTPS || DIAG.estLocalhost ? 'OUI (valide)' : 'NON (invalide)');
+    console.log('HTTPS          :', DIAG.estHTTPS ? 'OUI (valide)' : 'NON (invalide)');
     console.log('Service Worker :', DIAG.supportSW ? 'supporte' : 'non supporte');
     console.log('beforeinstall  :', DIAG.supportBIP ? 'supporte' : 'non supporte');
     console.log('iOS            :', DIAG.estIOS ? 'oui' : 'non');
     console.log('Android        :', DIAG.estAndroid ? 'oui' : 'non');
     console.log('Deja installe  :', DIAG.estStandalone ? 'oui (standalone)' : (estMarqueInstalle() ? 'oui (localStorage)' : 'non'));
-
-    if (!DIAG.estHTTPS && !DIAG.estLocalhost) {
-      console.warn('[PWA] ATTENTION : l\'installation PWA necessite HTTPS ou localhost.');
-      console.warn('[PWA] Ton adresse actuelle : ' + location.origin);
-    }
     console.groupEnd();
   }
 
-  /* ==========================================================
-     ETAT
-     ========================================================== */
-  let inviteDifferee = null;
   let banniereAffichee = false;
   let boutonSidebarCree = false;
-  let installable = false;
 
-  /* ==========================================================
-     VERIFICATIONS
-     ========================================================== */
-  async function initialiser() {
-    afficherDiagnostic();
-
-    // Verifier si deja installe
-    const installe = await verifierInstallation();
-    if (installe) return;
-
-    // Refus recent ?
-    try {
-      const refus = localStorage.getItem(CLE_REFUS);
-      if (refus) {
-        const ts = parseInt(refus, 10);
-        if (!isNaN(ts) && (Date.now() - ts) < DUREE_REFUS_MS) {
-          console.log('[PWA] Refus recent, pas de banniere automatique');
-          // Le bouton sidebar peut quand meme etre cree si installation possible
-          return;
-        }
-      }
-    } catch (e) {}
-  }
-
-  initialiser();
-
-  /* ==========================================================
-     EVENEMENTS
-     ========================================================== */
-  window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('[PWA] beforeinstallprompt capture');
-    e.preventDefault();
-    inviteDifferee = e;
-    installable = true;
-
-    // Proposer la banniere apres un delai
-    setTimeout(() => {
-      if (!banniereAffichee && inviteDifferee && !etatInstalle) {
-        afficherBanniere();
-      }
-    }, 5000);
-
-    // Afficher le bouton dans la sidebar
-    creerBoutonSidebar();
-  });
-
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] appinstalled : installation reussie');
-    inviteDifferee = null;
-    marquerInstalle();
-  });
-
-  // iOS : pas de beforeinstallprompt, mais on peut quand meme
-  // proposer le bouton car l'installation manuelle est possible
-  if (DIAG.estIOS && !DIAG.estStandalone) {
-    // Attendre un peu pour ne pas etre trop intrusif
-    setTimeout(() => {
-      if (!etatInstalle) creerBoutonSidebar();
-    }, 3000);
-  }
-
-  /* ==========================================================
-     BANNIERE
-     ========================================================== */
   function cheminLogo() {
     return (location.pathname.includes('/pages/') ? '../' : '') + 'assets/icon-192.png';
   }
@@ -248,14 +163,13 @@
     const btnOui = document.getElementById('pwa-install-oui');
     if (btnOui) {
       btnOui.onclick = async () => {
-        if (!inviteDifferee) { afficherInstructionsManuelles(); return; }
+        if (!window.deferredPrompt) { afficherInstructionsManuelles(); return; }
         try {
-          inviteDifferee.prompt();
-          const choix = await inviteDifferee.userChoice;
-          inviteDifferee = null;
+          window.deferredPrompt.prompt();
+          const choix = await window.deferredPrompt.userChoice;
+          window.deferredPrompt = null;
           if (choix && choix.outcome === 'accepted') {
             retirerBanniere();
-            // Note : appinstalled sera declenche par le navigateur
           } else {
             try { localStorage.setItem(CLE_REFUS, String(Date.now())); } catch (e) {}
             retirerBanniere();
@@ -289,11 +203,7 @@
     banniereAffichee = false;
   }
 
-  /* ==========================================================
-     MODALE D'INSTRUCTIONS
-     ========================================================== */
   function afficherInstructionsManuelles() {
-    // Ne pas afficher si deja installe
     if (etatInstalle) return;
 
     const overlay = document.createElement('div');
@@ -307,13 +217,10 @@
           '<p style="margin-bottom:16px">Pour installer Trade Journal sur ton iPhone ou iPad :</p>' +
           '<ol style="padding-left:20px;margin-bottom:16px;line-height:1.9">' +
             '<li>Ouvre cette page dans <strong>Safari</strong> (pas Chrome)</li>' +
-            '<li>Appuie sur le bouton <strong>Partager</strong> ' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-3px;width:16px;height:16px;"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
-              ' en bas de l\'ecran</li>' +
+            '<li>Appuie sur le bouton <strong>Partager</strong> en bas de l\'ecran</li>' +
             '<li>Fais defiler et choisis <strong>Sur l\'ecran d\'accueil</strong></li>' +
             '<li>Appuie sur <strong>Ajouter</strong></li>' +
           '</ol>' +
-          '<p style="color:var(--text-3);font-size:12px">L\'icone Trade Journal apparaitra sur ton ecran d\'accueil comme une application native.</p>' +
         '</div>';
     } else {
       contenu =
@@ -324,6 +231,9 @@
             '<li>Cherche <strong>Installer l\'application</strong> ou <strong>Ajouter a l\'ecran d\'accueil</strong></li>' +
             '<li>Confirme l\'installation</li>' +
           '</ol>' +
+          '<div style="padding:12px;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-3);line-height:1.6">' +
+            'Consulte la page <a href="installer.html" style="color:var(--accent)">Installer</a> pour des instructions detaillees selon ton appareil.' +
+          '</div>' +
         '</div>';
     }
 
@@ -334,6 +244,7 @@
         '</div>' +
         '<div class="modal-body">' + contenu + '</div>' +
         '<div class="modal-footer">' +
+          '<a href="installer.html" class="btn">Voir les instructions</a>' +
           '<button class="btn btn-primary" id="pwa-instructions-fermer">Compris</button>' +
         '</div>' +
       '</div>';
@@ -349,17 +260,11 @@
     });
   }
 
-  /* ==========================================================
-     BOUTON DANS LA SIDEBAR
-     ========================================================== */
   function creerBoutonSidebar() {
-    // Ne rien faire si deja installe
     if (etatInstalle) return;
     if (estMarqueInstalle()) return;
     if (DIAG.estStandalone) return;
     if (document.body.getAttribute('data-pwa-installed') === 'true') return;
-
-    // Ne rien faire si le bouton existe deja
     if (document.getElementById('pwa-sidebar-btn')) return;
 
     const footer = document.querySelector('.sidebar-footer');
@@ -383,18 +288,19 @@
 
     btn.onclick = async () => {
       if (etatInstalle) return;
-      if (inviteDifferee) {
+      if (window.deferredPrompt) {
         try {
-          inviteDifferee.prompt();
-          const choix = await inviteDifferee.userChoice;
-          inviteDifferee = null;
+          window.deferredPrompt.prompt();
+          const choix = await window.deferredPrompt.userChoice;
+          window.deferredPrompt = null;
           if (choix && choix.outcome === 'accepted') {
-            // appinstalled va nous notifier
             supprimerBoutonSidebar();
           }
         } catch (e) {}
       } else {
-        afficherInstructionsManuelles();
+        // Rediriger vers la page installer.html
+        const base = location.pathname.includes('/pages/') ? '' : 'pages/';
+        location.href = base + 'installer.html';
       }
     };
 
@@ -415,64 +321,84 @@
     boutonSidebarCree = false;
   }
 
-  /* ==========================================================
-     DETECTION AU RETOUR SUR L'ONGLET
-     ========================================================== */
-  document.addEventListener('visibilitychange', async () => {
-    if (document.visibilityState !== 'visible') return;
+  window.afficherInterfaceInstallation = function() {
     if (etatInstalle) return;
+    if (estMarqueInstalle()) return;
+
+    if (!banniereAffichee && window.deferredPrompt) {
+      setTimeout(() => {
+        if (!banniereAffichee && window.deferredPrompt && !etatInstalle) {
+          afficherBanniere();
+        }
+      }, 3000);
+    }
+
+    creerBoutonSidebar();
+  };
+
+  async function initialiser() {
+    afficherDiagnostic();
 
     const installe = await verifierInstallation();
-    if (installe) {
-      supprimerBoutonSidebar();
-      retirerBanniere();
+    if (installe) return;
+
+    try {
+      const refus = localStorage.getItem(CLE_REFUS);
+      if (refus) {
+        const ts = parseInt(refus, 10);
+        if (!isNaN(ts) && (Date.now() - ts) < DUREE_REFUS_MS) {
+          console.log('[PWA] Refus recent, pas de banniere automatique');
+          if (window.deferredPrompt) { creerBoutonSidebar(); }
+          return;
+        }
+      }
+    } catch (e) {}
+
+    if (window.deferredPrompt) {
+      window.afficherInterfaceInstallation();
     }
+  }
+
+  initialiser();
+
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] appinstalled : installation reussie');
+    window.deferredPrompt = null;
+    marquerInstalle();
   });
 
-  /* ==========================================================
-     VERIFICATION PERIODIQUE
-     ==========================================================
-     Toutes les 10 secondes, on verifie si l'app est installee.
-     Utile pour le cas ou l'utilisateur installe l'app en
-     arriere-plan et revient sur l'onglet sans rechargement.
-     ========================================================== */
+  if (DIAG.estIOS && !DIAG.estStandalone) {
+    setTimeout(() => {
+      if (!etatInstalle) creerBoutonSidebar();
+    }, 3000);
+  }
+
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible' || etatInstalle) return;
+    const installe = await verifierInstallation();
+    if (installe) { supprimerBoutonSidebar(); retirerBanniere(); }
+  });
+
   setInterval(async () => {
     if (etatInstalle) return;
     const installe = await verifierInstallation();
-    if (installe) {
-      supprimerBoutonSidebar();
-      retirerBanniere();
-    }
+    if (installe) { supprimerBoutonSidebar(); retirerBanniere(); }
   }, 10000);
 
-  /* ==========================================================
-     CREATION DU BOUTON APRES LE DOM
-     ========================================================== */
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(async () => {
-      // Verifier l'etat avant de creer
       const installe = await verifierInstallation();
       if (installe) return;
-
-      // Creer le bouton si installable ou iOS
-      if (installable || DIAG.estIOS) {
+      if (window.deferredPrompt || DIAG.estIOS) {
         creerBoutonSidebar();
       }
     }, 500);
   });
 
-  /* ==========================================================
-     OBSERVATEUR DE MUTATION
-     ==========================================================
-     Si la sidebar est rerendue, on recree le bouton.
-     Mais seulement si l'app n'est pas installee.
-     ========================================================== */
   const observer = new MutationObserver(async () => {
-    if (etatInstalle) return;
-    if (estMarqueInstalle()) return;
+    if (etatInstalle || estMarqueInstalle()) return;
     if (document.body.getAttribute('data-pwa-installed') === 'true') return;
-    if (!installable && !DIAG.estIOS) return;
-
+    if (!window.deferredPrompt && !DIAG.estIOS) return;
     if (!document.getElementById('pwa-sidebar-btn') && document.querySelector('.sidebar-footer')) {
       creerBoutonSidebar();
     }
