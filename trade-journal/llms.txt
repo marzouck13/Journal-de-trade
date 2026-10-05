@@ -38,11 +38,11 @@ L'utilisateur peut exporter l'integralite de ses donnees a tout moment dans un d
 
 ## Pages publiques
 
-- [Accueil](https://trade-journal-app.com/index.html) : application et presentation de la plateforme
-- [A propos](https://trade-journal-app.com/pages/a-propos.html) : le projet, l'auteur, comment aider, licence MIT
-- [Support](https://trade-journal-app.com/pages/support.html) : FAQ et contact
-- [Conditions d'utilisation](https://trade-journal-app.com/pages/cgu.html)
-- [Politique de confidentialite](https://trade-journal-app.com/pages/confidentialite.html)
+- [Accueil](https://montrade-journal.netlify.app/index.html) : application et presentation de la plateforme
+- [A propos](https://montrade-journal.netlify.app/pages/a-propos.html) : le projet, l'auteur, comment aider, licence MIT
+- [Support](https://montrade-journal.netlify.app/pages/support.html) : FAQ et contact
+- [Conditions d'utilisation](https://montrade-journal.netlify.app/pages/cgu.html)
+- [Politique de confidentialite](https://montrade-journal.netlify.app/pages/confidentialite.html)
 
 ## A propos de l'auteur
 

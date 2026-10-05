@@ -82,7 +82,7 @@ Disallow: /pages/graphiques.html
 Disallow: /pages/calendrier-economique.html
 
 # --- Sitemap ---
-Sitemap: https://trade-journal-app.com/sitemap.xml
+Sitemap: https://montrade-journal.netlify.app/sitemap.xml
 
 # --- LLMs.txt (pour les IA) ---
-# Fichier disponible a : https://trade-journal-app.com/llms.txt
+# Fichier disponible a : https://montrade-journal.netlify.app/llms.txt
