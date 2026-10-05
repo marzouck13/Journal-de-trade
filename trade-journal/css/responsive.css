@@ -1,8 +1,9 @@
 /* ============================================================
-   RESPONSIVE - Version 2.6
+   RESPONSIVE - Version 2.7
    ------------------------------------------------------------
-   Fix : boutons d'action topbar robustes (plus de :has()),
-   empeche tout debordement horizontal.
+   Fix : affichage des informations contextuelles sur mobile
+   (sous-titre topbar, label session, meta calendrier).
+   Empeche tout debordement horizontal.
    ============================================================ */
 
 /* ---------- Global : empeche le scroll horizontal ---------- */
@@ -63,10 +64,13 @@ img, iframe, video, svg {
   .main { margin-left: 0; }
   .menu-toggle { display: inline-flex; }
 
-  /* ---------- Topbar : empeche le debordement ---------- */
+  /* ---------- Topbar : accueille titre + sous-titre ----------
+     On remonte la hauteur a 64px pour loger les deux lignes.
+     Le titre est plus petit, le sous-titre est conserve en
+     taille reduite. */
   .topbar {
     padding: 0 12px;
-    height: 56px;
+    height: 64px;
     gap: 6px;
     overflow: hidden;
     flex-wrap: nowrap;
@@ -75,14 +79,28 @@ img, iframe, video, svg {
     flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
   }
   .topbar-title {
     font-size: 14px;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .topbar-sub { display: none; }
+  /* LE SOUS-TITRE EST DESORMAIS AFFICHE */
+  .topbar-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--text-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
 
   .topbar-actions {
     gap: 4px;
@@ -90,9 +108,7 @@ img, iframe, video, svg {
     flex-wrap: nowrap;
   }
 
-  /* ---------- Bouton d'action topbar ----------
-     La classe .btn-action-topbar remplace :has(svg).
-     Doit contenir un SVG. Devient une icone carree. */
+  /* ---------- Bouton d'action topbar ---------- */
   .topbar-actions .btn-action-topbar {
     width: 34px;
     height: 34px;
@@ -112,18 +128,28 @@ img, iframe, video, svg {
     flex-shrink: 0;
   }
 
-  /* ---------- Badges compacts ---------- */
+  /* ---------- Badges compacts ----------
+     Le label de session est desormais VISIBLE sur mobile,
+     en taille reduite, pour que l'utilisateur sache quelle
+     session est active. */
   .session-badge {
-    padding: 0 6px;
-    height: 30px;
+    padding: 0 8px;
+    height: 32px;
     font-size: 11px;
     flex-shrink: 0;
+    gap: 5px;
   }
-  .session-badge .session-label { display: none; }
+  .session-badge .session-label {
+    display: inline;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .btn.theme-toggle {
-    width: 30px !important;
-    height: 30px !important;
+    width: 32px !important;
+    height: 32px !important;
     padding: 0 !important;
     display: inline-grid !important;
     place-items: center;
@@ -132,8 +158,8 @@ img, iframe, video, svg {
   .btn.theme-toggle svg { width: 14px; height: 14px; }
 
   .menu-toggle {
-    padding: 5px 8px;
-    min-width: 30px;
+    padding: 6px 9px;
+    min-width: 32px;
     justify-content: center;
     flex-shrink: 0;
   }
@@ -161,6 +187,8 @@ img, iframe, video, svg {
   .card { padding: 16px 14px; }
   .card-header { flex-wrap: wrap; gap: 8px; }
   .card-title { font-size: 13px; }
+  /* Le card-sub (sous-titre de carte) reste visible */
+  .card-sub { font-size: 11.5px; }
 
   /* ---------- Modales ---------- */
   .modal-overlay { padding: 12px; }
@@ -188,7 +216,9 @@ img, iframe, video, svg {
     max-width: 100%;
   }
 
-  /* ---------- Calendrier ---------- */
+  /* ---------- Calendrier ----------
+     La meta (nb trades + winrate) est desormais VISIBLE en
+     tres petite taille pour que chaque jour ait du sens. */
   .cal-grid { gap: 2px; }
   .cal-head {
     font-size: 9px;
@@ -196,13 +226,21 @@ img, iframe, video, svg {
     letter-spacing: 0.04em;
   }
   .cal-day {
-    min-height: 58px;
+    min-height: 66px;
     padding: 4px;
     gap: 1px;
   }
   .cal-day-num { font-size: 10px; }
-  .cal-day-pnl { font-size: 10px; }
-  .cal-day-meta { display: none; }
+  .cal-day-pnl { font-size: 10px; font-weight: 600; }
+  .cal-day-meta {
+    display: block;
+    font-size: 8.5px;
+    color: var(--text-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.15;
+  }
   .cal-day-r { font-size: 9px; }
 
   /* ---------- Tableaux -> cartes ---------- */
@@ -321,10 +359,19 @@ img, iframe, video, svg {
   .content { padding: 12px 10px 80px; }
   .card { padding: 14px 12px; }
 
-  .topbar { padding: 0 10px; gap: 4px; }
+  .topbar { padding: 0 10px; gap: 4px; height: 62px; }
+  .topbar-title { font-size: 13px; }
+  .topbar-sub { font-size: 10.5px; }
   .topbar-actions { gap: 4px; }
 
-  .session-badge { padding: 0 5px; font-size: 10px; }
+  /* Le badge session se reduit encore */
+  .session-badge {
+    padding: 0 6px;
+    font-size: 10px;
+    height: 30px;
+    gap: 4px;
+  }
+  .session-badge .session-label { max-width: 60px; }
 
   .chart-box { height: 200px; }
   .chart-box.tall { height: 240px; }
@@ -334,6 +381,10 @@ img, iframe, video, svg {
     height: 32px;
     min-width: 32px;
   }
+
+  /* Sur tres petit ecran, on masque seulement la meta du calendrier
+     (l'info reste accessible au clic sur le jour) */
+  .cal-day-meta { display: none; }
 
   .tv-chart-container {
     height: 75vh;
