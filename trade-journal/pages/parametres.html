@@ -14,10 +14,27 @@
 <link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 <link rel="icon" href="../assets/favicon.png" sizes="any">
+<link rel="stylesheet" href="../css/loader.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
 </head>
 <body>
+<div id="tj-loader" role="status" aria-label="Chargement">
+  <div class="tj-loader-contenu">
+    <img src="../assets/icon-192.png" alt="" class="tj-loader-logo">
+    <svg class="tj-loader-svg" viewBox="0 0 200 100" aria-hidden="true">
+      <line class="tj-loader-base" x1="10" y1="90" x2="190" y2="90"/>
+      <g class="tj-loader-bar tj-loader-bar-1"><rect x="25" y="60" width="14" height="30" rx="3"/></g>
+      <g class="tj-loader-bar tj-loader-bar-2"><rect x="55" y="40" width="14" height="50" rx="3"/></g>
+      <g class="tj-loader-bar tj-loader-bar-3"><rect x="85" y="55" width="14" height="35" rx="3"/></g>
+      <g class="tj-loader-bar tj-loader-bar-4"><rect x="115" y="25" width="14" height="65" rx="3"/></g>
+      <g class="tj-loader-bar tj-loader-bar-5"><rect x="145" y="10" width="14" height="80" rx="3"/></g>
+      <path class="tj-loader-ligne" d="M32 65 L62 45 L92 60 L122 30 L152 15"/>
+    </svg>
+    <div class="tj-loader-texte">Chargement</div>
+  </div>
+</div>
+
 
 <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
@@ -205,5 +222,6 @@
 <script src="../js/app.js"></script>
 <script src="../js/pwa-register.js"></script>
 <script src="../js/pwa-install.js"></script>
+<script src="../js/loader.js"></script>
 </body>
 </html>

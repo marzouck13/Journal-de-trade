@@ -1,0 +1,173 @@
+/* ============================================================
+   LOADER - Ecran de chargement avec graphique anime
+   ------------------------------------------------------------
+   Affiche un ecran plein ecran avec le logo + un graphique
+   anime (barres qui montent + courbe qui se dessine).
+   Disparait automatiquement quand la page est prete.
+   ============================================================ */
+
+#tj-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  background: #0a0d14;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  /* Filet de securite : si le JS ne tourne pas, on masque apres 3s */
+  animation: tj-loader-fallback 0.3s ease 3s forwards;
+}
+
+[data-theme="light"] #tj-loader {
+  background: #f5f6f8;
+}
+
+#tj-loader.tj-loader-sortie {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: none;
+}
+
+@keyframes tj-loader-fallback {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+.tj-loader-contenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  padding: 24px;
+}
+
+.tj-loader-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  opacity: 0;
+  animation: tj-loader-logo-apparait 0.5s ease-out forwards;
+}
+
+@keyframes tj-loader-logo-apparait {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.tj-loader-svg {
+  width: 200px;
+  max-width: calc(100vw - 48px);
+  height: auto;
+  overflow: visible;
+  display: block;
+}
+
+.tj-loader-base {
+  stroke: #4f8cff;
+  stroke-opacity: 0.15;
+  stroke-width: 1;
+}
+
+[data-theme="light"] .tj-loader-base {
+  stroke: #2563eb;
+  stroke-opacity: 0.2;
+}
+
+/* ---------- Barres ---------- */
+.tj-loader-bar rect {
+  fill: #4f8cff;
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transform: scaleY(0);
+  animation: tj-loader-bar-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+[data-theme="light"] .tj-loader-bar rect {
+  fill: #2563eb;
+}
+
+.tj-loader-bar-1 rect { animation-delay: 0.05s; }
+.tj-loader-bar-2 rect { animation-delay: 0.13s; }
+.tj-loader-bar-3 rect { animation-delay: 0.21s; }
+.tj-loader-bar-4 rect { animation-delay: 0.29s; }
+.tj-loader-bar-5 rect { animation-delay: 0.37s; }
+
+@keyframes tj-loader-bar-reveal {
+  to { transform: scaleY(1); }
+}
+
+/* ---------- Courbe ---------- */
+.tj-loader-ligne {
+  fill: none;
+  stroke: #4f8cff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: tj-loader-ligne-dessin 0.9s ease-out 0.5s forwards;
+}
+
+[data-theme="light"] .tj-loader-ligne {
+  stroke: #2563eb;
+}
+
+@keyframes tj-loader-ligne-dessin {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------- Texte ---------- */
+.tj-loader-texte {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  color: #6b7488;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+  opacity: 0;
+  animation: tj-loader-texte-apparait 0.4s ease-out 0.3s forwards;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-theme="light"] .tj-loader-texte {
+  color: #838b9b;
+}
+
+.tj-loader-texte::after {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: tj-loader-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes tj-loader-texte-apparait {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tj-loader-pulse {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+/* ---------- Accessibilite ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tj-loader-bar rect,
+  .tj-loader-ligne,
+  .tj-loader-logo,
+  .tj-loader-texte {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .tj-loader-ligne {
+    stroke-dashoffset: 0 !important;
+  }
+}
