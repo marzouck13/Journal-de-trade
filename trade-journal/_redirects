@@ -1,12 +1,46 @@
-# Toutes les routes inconnues -> index.html
-/*    /index.html   200
+# ============================================================
+# NETLIFY REDIRECTS - Trade Journal
+# ============================================================
 
-# Redirections explicites
-/journal          /pages/journal.html        200
-/parametres       /pages/parametres.html     200
-/graphiques       /pages/graphiques.html     200
-/soutenir         /pages/soutenir.html       200
-/a-propos         /pages/a-propos.html       200
-/support          /pages/support.html        200
-/cgu              /pages/cgu.html            200
+# ---------- Crawlers IA vers index-bot.html ----------
+/index.html   /index-bot.html   200  User-Agent:GPTBot
+/index.html   /index-bot.html   200  User-Agent:OAI-SearchBot
+/index.html   /index-bot.html   200  User-Agent:ChatGPT-User
+/index.html   /index-bot.html   200  User-Agent:ClaudeBot
+/index.html   /index-bot.html   200  User-Agent:Claude-SearchBot
+/index.html   /index-bot.html   200  User-Agent:PerplexityBot
+/index.html   /index-bot.html   200  User-Agent:Google-Extended
+/index.html   /index-bot.html   200  User-Agent:Applebot-Extended
+/index.html   /index-bot.html   200  User-Agent:CCBot
+/index.html   /index-bot.html   200  User-Agent:cohere-ai
+/index.html   /index-bot.html   200  User-Agent:Meta-ExternalAgent
+/index.html   /index-bot.html   200  User-Agent:Bytespider
+
+# ---------- Redirection racine vers index.html ----------
+/   /index.html   200
+
+# ---------- Alias d'URL sans extension ----------
+/journal          /pages/journal.html         200
+/parametres       /pages/parametres.html      200
+/graphiques       /pages/graphiques.html      200
+/statistiques     /pages/statistiques.html    200
+/calendrier       /pages/calendrier.html      200
+/actifs           /pages/actifs.html          200
+/setups           /pages/setups.html          200
+/risque           /pages/risque.html          200
+/discipline       /pages/discipline.html      200
+/psychologie      /pages/psychologie.html     200
+/evolution        /pages/evolution.html       200
+/objectifs        /pages/objectifs.html       200
+/challenges       /pages/challenges.html      200
+/notes            /pages/notes.html           200
+/lecons           /pages/lecons.html          200
+/rapports         /pages/rapports.html        200
+/soutenir         /pages/soutenir.html        200
+/a-propos         /pages/a-propos.html        200
+/support          /pages/support.html         200
+/cgu              /pages/cgu.html             200
 /confidentialite  /pages/confidentialite.html 200
+
+# ---------- Fallback ----------
+/*   /index.html   404
